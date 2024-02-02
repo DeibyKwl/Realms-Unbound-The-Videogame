@@ -9,7 +9,7 @@ game_over = False
 pygame.init()
 
 SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 1000
+SCREEN_HEIGHT = 900
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
