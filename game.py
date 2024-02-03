@@ -1,10 +1,13 @@
 import pygame
 import math
 import random
+import time
 
 import cards as card
+import dice
 
 game_over = False
+roll_dice = True
 
 pygame.init()
 
@@ -15,6 +18,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 running = True
 dt = 0
+dice_number = None
 
 # Select Player
 player = pygame.sprite.Group()
@@ -77,18 +81,24 @@ player_instance = card.player_set(player_class)
 player.add(player_instance)
 
 
-
 # main gameplay
 while running:
+
+    # fill the screen with a color to wipe away anything from last frame
+    screen.fill("black")
+
+    if roll_dice:
+        dice.dice_rolling(screen)
+        dice_number = pygame.font.Font(None, 45).render(str(random.randint(1,7)), True, "White")
+        roll_dice = False
+    
+    screen.blit(dice_number, (500,500))
 
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("black")
 
     # Draw player
     player.draw(screen)
