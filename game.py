@@ -19,6 +19,7 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 dice_number = None
+dice_number_view = None
 
 # Select Player
 player = pygame.sprite.Group()
@@ -89,10 +90,11 @@ while running:
 
     if roll_dice:
         dice.dice_rolling(screen)
-        dice_number = pygame.font.Font(None, 45).render(str(random.randint(1,7)), True, "White")
+        dice_number = random.randint(1,7)
+        dice_number_view = pygame.font.Font(None, 45).render(str(dice_number), True, "White")
         roll_dice = False
     
-    screen.blit(dice_number, (500,500))
+    screen.blit(dice_number_view, (500,500))
 
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
