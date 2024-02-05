@@ -7,7 +7,7 @@ duration = 2
 def draw_dice(number, screen, result=False):
     screen.fill("black")
     dice_number = pygame.font.Font(None, 45).render(str(number), True, "White")
-    screen.blit(dice_number, (500,500))
+    screen.blit(dice_number, (1100,500))
     pygame.display.flip()
     pygame.time.delay(10)
 
@@ -20,3 +20,8 @@ def dice_rolling(screen):
             # Display a random number after 2 seconds
             random_number = random.randint(1, 6)
             draw_dice(random_number, screen)            
+
+def roll_dice(screen):
+    dice_rolling(screen)
+    dice_number = random.randint(1,7)
+    return dice_number
