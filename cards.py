@@ -1,14 +1,17 @@
 import pygame
 
 class deck_set(pygame.sprite.Sprite):
-    def __init__(self, card_pos):
+    def __init__(self, card_class, x_pos, y_pos, bonus=False):
         super().__init__()
-        print('nothing')
+        if bonus:
+            self.image = pygame.image.load(f'sprites/deck/{card_class}_bonus.png').convert_alpha()
+        else:
+            self.image = pygame.image.load(f'sprites/deck/{card_class}.png').convert_alpha()
+         
+        self.image = pygame.transform.scale(self.image, (130,180))
+        self.rect = self.image.get_rect(topleft = (x_pos,y_pos))
+        self.card_class = card_class
 
-        # Sprite 
-
-
-        # Stats
 
 class player_set(pygame.sprite.Sprite):
     def __init__(self, player_class):
@@ -16,7 +19,7 @@ class player_set(pygame.sprite.Sprite):
         health = 5
         self.image = pygame.image.load(f'sprites/player/player_{player_class}_{health}.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (130,180))
-        self.rect = self.image.get_rect(topleft = (545,510))
+        self.rect = self.image.get_rect(topleft = (535,500))
         self.player_class = player_class
 
 
@@ -27,13 +30,11 @@ class player_set(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = (545,510))
 
 
-
-
 class enemy_set(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, enemy_class, x_pos, y_pos):
             super().__init__()
- 
-            # Sprite 
-
-
-            # Stats
+            health = 1
+            self.image = pygame.image.load(f'sprites/enemy/enemy_{enemy_class}.png').convert_alpha()
+            self.image = pygame.transform.scale(self.image, (130,180))
+            self.rect = self.image.get_rect(topleft = (x_pos,y_pos))
+            self.enemy_class = enemy_class
