@@ -121,11 +121,17 @@ for _ in range(7):
     cards_set.add(card_instance)
     card_x_pos += 170
 
+card_selection = True
+attack_enemy = False
+
 # main gameplay
 while running:
 
+    mouse_pos = pygame.mouse.get_pos()
+
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
+
     if not roll_dice:
         dice_number_view = pygame.font.Font(None, 45).render(str(dice_num), True, "White")
     screen.blit(dice_number_view, (1100,500))
@@ -135,7 +141,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+    
     # Draw player
     player.draw(screen)
 
@@ -144,6 +150,25 @@ while running:
 
     # Draw Card set
     cards_set.draw(screen)
+
+    if card_selection:
+        for c in cards_set:
+            if c.rect.collidepoint(mouse_pos):
+                if pygame.mouse.get_pressed()[0] == 1:
+                    c.player_card_used()
+                    card_selection = False
+                    attack_enemy = True
+    
+    if attack_enemy:
+        for e in enemies:
+            if e.rect.collidepoint(mouse_pos):
+                if pygame.mouse.get_pressed()[0] == 1:
+                    e.kill()
+                    card_selection = True
+                    attack_enemy = False
+    
+
+
 
     # flip() the display to put your work on screen
     pygame.display.flip()
