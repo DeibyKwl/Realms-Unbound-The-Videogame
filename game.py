@@ -34,9 +34,8 @@ while player_selected:
 
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            player_selected = False
+    if pygame.QUIT in set([x.type for x in pygame.event.get()]):
+        player_selected = False
     
     screen.fill("black")
 
@@ -57,23 +56,22 @@ while player_selected:
     mage_rect = mage_text.get_rect(topleft = (595,550))
     screen.blit(mage_text,(595,550))
 
-    if swordman_rect.collidepoint(mouse_pos):
-        if pygame.mouse.get_pressed()[0] == 1:
-            player_class = 'swordman'
-            player_selected = False
-            player_class_code = 0
+    pressed = True if pygame.mouse.get_pressed()[0] == 1 else False
 
-    if archer_rect.collidepoint(mouse_pos):
-        if pygame.mouse.get_pressed()[0] == 1:
-            player_class = 'archer'
-            player_selected = False
-            player_class_code = 1
+    if swordman_rect.collidepoint(mouse_pos) and pressed:
+        player_class = 'swordman'
+        player_selected = False
+        player_class_code = 0
 
-    if mage_rect.collidepoint(mouse_pos):
-        if pygame.mouse.get_pressed()[0] == 1:
-            player_class = 'mage'
-            player_selected = False
-            player_class_code = 2
+    if archer_rect.collidepoint(mouse_pos) and pressed:
+        player_class = 'archer'
+        player_selected = False
+        player_class_code = 1
+
+    if mage_rect.collidepoint(mouse_pos) and pressed:
+        player_class = 'mage'
+        player_selected = False
+        player_class_code = 2
 
     # flip() the display to put your work on screen
     pygame.display.flip()
@@ -99,9 +97,12 @@ enemy_x_pos, enemy_y_pos = 25,10
 # Creation of enemies
 for _ in range(enemy_num):
     # TODO: find a way to sparce enemies evenly depending on the number of enemies
-    enemy_instance = card.enemy_set(enemy_classes[random.randint(0,2)],enemy_x_pos,enemy_y_pos)
+
+    enemy_class_code = random.randint(0,2)
+    enemy_instance = card.enemy_set(enemy_classes[enemy_class_code], enemy_class_code,enemy_x_pos,enemy_y_pos)
     enemies.add(enemy_instance)
     enemy_x_pos += 170
+
 
     # To keep track of the enemies?
     enemy_list.append(enemy_instance)
@@ -123,6 +124,8 @@ for _ in range(7):
 
 card_selection = True
 attack_enemy = False
+card_selected = None
+enemy_turn = False
 
 # main gameplay
 while running:
@@ -138,36 +141,53 @@ while running:
 
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    if pygame.QUIT in set([x.type for x in pygame.event.get()]):
+        running = False
     
-    # Draw player
     player.draw(screen)
-
-    # Draw enemies
     enemies.draw(screen)
-
-    # Draw Card set
     cards_set.draw(screen)
 
-    if card_selection:
+    pressed = True if pygame.mouse.get_pressed()[0] == 1 else False
+
+    # Card selection for attacking enemies
+    if card_selection and pressed:
         for c in cards_set:
-            if c.rect.collidepoint(mouse_pos):
-                if pygame.mouse.get_pressed()[0] == 1:
-                    c.player_card_used()
-                    card_selection = False
-                    attack_enemy = True
-    
-    if attack_enemy:
+            if c.rect.collidepoint(mouse_pos) and c.card_class in ['sword_attack', 'arrow_shot', 'magic_attack']:
+                c.player_card_used()
+                card_selection = False
+                attack_enemy = True
+                card_selected = c
+        
+    if attack_enemy and pressed:
         for e in enemies:
             if e.rect.collidepoint(mouse_pos):
-                if pygame.mouse.get_pressed()[0] == 1:
-                    e.kill()
-                    card_selection = True
-                    attack_enemy = False
-    
+                e.kill()
+                card_selected.kill()
+                card_selection = False
+                attack_enemy = False
+                enemy_turn = True
+                #print(list(enemies)[0].enemy_class)
 
+    #print(list(enemies)[0].enemy_class)
+    if enemy_turn:
+        card_class = random.randint(0,2)
+        if list(enemies)[0].enemy_class_code == card_class:
+            enemy_card = card.deck_set(card_classes[card_class], 100, 100, True)
+        else:
+            enemy_card = card.deck_set(card_classes[card_class], 100, 100, False)
+        
+        enemy_card_attack = pygame.sprite.Group()
+        enemy_card_attack.add(enemy_card)
+
+        card_selection = True
+        enemy_turn = False
+
+        # Draw enemy card attack and wait some seconds to attack player
+        duration = 1
+        start_time = time.time()
+        while time.time() - start_time < duration:
+            enemy_card_attack.draw(screen)
 
 
     # flip() the display to put your work on screen
