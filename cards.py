@@ -11,6 +11,10 @@ class deck_set(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (130,180))
         self.rect = self.image.get_rect(topleft = (x_pos,y_pos))
         self.card_class = card_class
+    
+    def player_card_used(self):
+        self.image = pygame.transform.scale(self.image, (130,180))
+        self.rect = self.image.get_rect(topleft = (400,300))
 
 
 class player_set(pygame.sprite.Sprite):
