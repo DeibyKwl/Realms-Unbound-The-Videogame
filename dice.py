@@ -15,7 +15,7 @@ def dice_rolling(screen):
     start_time = time.time()
     while time.time() - start_time < duration:
         # Display numbers 1 to 6
-        for i in range(1, 7):
+        for i in range(1, 6):
             draw_dice(i, screen)
             # Display a random number after 2 seconds
             random_number = random.randint(1, 6)
@@ -23,5 +23,5 @@ def dice_rolling(screen):
 
 def roll_dice(screen):
     dice_rolling(screen)
-    dice_number = random.randint(1,7)
+    dice_number = random.randint(1,6)
     return dice_number
