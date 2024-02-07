@@ -33,7 +33,7 @@ class player_set(pygame.sprite.Sprite):
     def player_update(self):
         self.image = pygame.image.load(f'sprites/player/player_{self.player_class}_{self.health}.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (130,180))
-        self.rect = self.image.get_rect(topleft = (545,510))
+        self.rect = self.image.get_rect(topleft = (535,510))
 
 
 class enemy_set(pygame.sprite.Sprite):
