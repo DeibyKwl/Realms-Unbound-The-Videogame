@@ -103,7 +103,6 @@ for _ in range(enemy_num):
     enemies.add(enemy_instance)
     enemy_x_pos += 170
 
-
     # To keep track of the enemies?
     enemy_list.append(enemy_instance)
 
@@ -170,7 +169,7 @@ while running:
                 #print(list(enemies)[0].enemy_class)
 
     #print(list(enemies)[0].enemy_class)
-    if enemy_turn:
+    if enemy_turn and len(enemies) > 0:
         card_class = random.randint(0,2)
         if list(enemies)[0].enemy_class_code == card_class:
             enemy_card = card.deck_set(card_classes[card_class], 100, 100, True)
@@ -188,6 +187,7 @@ while running:
         start_time = time.time()
         while time.time() - start_time < duration:
             enemy_card_attack.draw(screen)
+            pygame.display.flip()
 
 
     # flip() the display to put your work on screen
