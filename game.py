@@ -90,9 +90,9 @@ enemy_num = dice.roll_dice(screen)
 dice_num = enemy_num
 
 enemies = pygame.sprite.Group()
-enemy_list = []
 enemy_classes = ['swordman', 'archer', 'mage']
 enemy_x_pos, enemy_y_pos = 25,10
+number_of_enemies = 0
 
 # Creation of enemies
 for _ in range(enemy_num):
@@ -102,24 +102,33 @@ for _ in range(enemy_num):
     enemy_instance = card.enemy_set(enemy_classes[enemy_class_code], enemy_class_code,enemy_x_pos,enemy_y_pos)
     enemies.add(enemy_instance)
     enemy_x_pos += 170
+    number_of_enemies += 1
 
-    # To keep track of the enemies?
-    enemy_list.append(enemy_instance)
 
 cards_set = pygame.sprite.Group()
 card_classes = ['sword_attack', 'arrow_shot', 'magic_attack', 'heal', 'defense']
 card_x_pos, card_y_pos = 25, 700
 
-attack_card_set = []
-defense_card_set = []
+attack_card_num = 0
+defense_card_num = 0
+
+# To know last x position of attack card
+last_x_pos = 0
 
 # Creation of card set
 for _ in range(7):
     card_class = random.randint(0,4)
-    if player_class_code == card_class:
-        card_instance = card.deck_set(card_classes[card_class], card_x_pos, card_y_pos, True)
-    else:
-        card_instance = card.deck_set(card_classes[card_class], card_x_pos, card_y_pos, False)
+    bonus = True if player_class_code == card_class else False
+    card_instance = card.deck_set(card_classes[card_class], card_x_pos, card_y_pos, bonus)
+    
+    if card_class in [0,1,2]:
+        attack_card_num += 1
+        last_x_pos = card_x_pos
+
+    # For the shield
+    elif card_class == 4:
+        defense_card_num += 1
+
     cards_set.add(card_instance)
     card_x_pos += 170
 
@@ -127,6 +136,7 @@ card_selection = True
 attack_enemy = False
 card_selected = None
 enemy_turn = False
+
 
 # main gameplay
 while running:
@@ -171,14 +181,25 @@ while running:
         while time.time() - start_time < duration:
             enemy_card_attack.draw(screen)
             pygame.display.flip()
-        
-        # Dealing damage to player
-        if bonus_damage:
-            list(player)[0].health -= 2
+
+        if defense_card_num > 0:
+            for c in cards_set:
+                if c.card_class == 'defense':
+                    c.kill()
+                    defense_card_num -= 1
+                    break
         else:
-            list(player)[0].health -= 1
-        
-        list(player)[0].player_update()
+            # Dealing damage to player
+            if bonus_damage:
+                list(player)[0].health -= 2
+            else:
+                list(player)[0].health -= 1
+            
+            if list(player)[0].health > 0:
+                list(player)[0].player_update()
+            else:
+                running = False
+                result = 'Defeated'
 
 
     pressed = True if pygame.mouse.get_pressed()[0] == 1 else False
@@ -191,6 +212,18 @@ while running:
                 card_selection = False
                 attack_enemy = True
                 card_selected = c
+
+            elif c.rect.collidepoint(mouse_pos) and c.card_class == 'heal' and list(player)[0].health < 5:
+                c.player_card_used()
+                card_selection = False
+                attack_enemy = False
+                enemy_turn = True
+                if list(player)[0].health == 4:
+                    list(player)[0].health += 1
+                else:
+                    list(player)[0].health += 2
+                list(player)[0].player_update()
+                c.kill()
         
     if attack_enemy and pressed:
         for e in enemies:
@@ -200,7 +233,19 @@ while running:
                 card_selection = False
                 attack_enemy = False
                 enemy_turn = True
+                attack_card_num -= 1
+                number_of_enemies -= 1
     
+    if number_of_enemies == 0:
+        running = False
+        result = 'Victory'
+
+    elif attack_card_num == 0:
+        card_class = random.randint(0,2)
+        bonus = True if player_class_code == card_class else False
+        card_instance = card.deck_set(card_classes[card_class], last_x_pos, 700, bonus)
+        attack_card_num += 1
+        cards_set.add(card_instance)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
@@ -209,5 +254,24 @@ while running:
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
+
+
+game_over = True
+while game_over:
+    if pygame.QUIT in set([x.type for x in pygame.event.get()]):
+        game_over = False
+
+    # fill the screen with a color to wipe away anything from last frame
+    screen.fill("black")
+
+    if result == 'Defeated':
+        result_text = pygame.font.Font(None, 50).render('DEFEATED', False, 'White')
+    elif result == 'Victory':
+        result_text = pygame.font.Font(None, 50).render('VICTORY', False, 'White')
+
+    screen.blit(result_text,(500,200))
+    
+    # flip() the display to put your work on screen
+    pygame.display.flip()
 
 pygame.quit()
