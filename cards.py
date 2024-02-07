@@ -22,16 +22,16 @@ class deck_set(pygame.sprite.Sprite):
 class player_set(pygame.sprite.Sprite):
     def __init__(self, player_class):
         super().__init__()
-        health = 5
-        self.image = pygame.image.load(f'sprites/player/player_{player_class}_{health}.png').convert_alpha()
+        self.health = 5
+        self.image = pygame.image.load(f'sprites/player/player_{player_class}_{self.health}.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (130,180))
         self.rect = self.image.get_rect(topleft = (535,500))
         self.player_class = player_class
 
 
     # Stats
-    def player_update(self, health):
-        self.image = pygame.image.load(f'sprites/player/player_{self.player_class}_{health}.png').convert_alpha()
+    def player_update(self):
+        self.image = pygame.image.load(f'sprites/player/player_{self.player_class}_{self.health}.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (130,180))
         self.rect = self.image.get_rect(topleft = (545,510))
 

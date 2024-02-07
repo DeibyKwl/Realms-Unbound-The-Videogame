@@ -107,9 +107,11 @@ for _ in range(enemy_num):
     enemy_list.append(enemy_instance)
 
 cards_set = pygame.sprite.Group()
-card_list = []
 card_classes = ['sword_attack', 'arrow_shot', 'magic_attack', 'heal', 'defense']
 card_x_pos, card_y_pos = 25, 700
+
+attack_card_set = []
+defense_card_set = []
 
 # Creation of card set
 for _ in range(7):
@@ -147,6 +149,38 @@ while running:
     enemies.draw(screen)
     cards_set.draw(screen)
 
+
+    if enemy_turn and len(enemies) > 0:
+        bonus_damage = False
+        card_class = random.randint(0,2)
+        if list(enemies)[0].enemy_class_code == card_class:
+            enemy_card = card.deck_set(card_classes[card_class], 800, 300, True)
+            bonus_damage = True
+        else:
+            enemy_card = card.deck_set(card_classes[card_class], 800, 300)
+        
+        enemy_card_attack = pygame.sprite.Group()
+        enemy_card_attack.add(enemy_card)
+
+        card_selection = True
+        enemy_turn = False
+
+        # Draw enemy card attack and wait some seconds to attack player
+        duration = 1
+        start_time = time.time()
+        while time.time() - start_time < duration:
+            enemy_card_attack.draw(screen)
+            pygame.display.flip()
+        
+        # Dealing damage to player
+        if bonus_damage:
+            list(player)[0].health -= 2
+        else:
+            list(player)[0].health -= 1
+        
+        list(player)[0].player_update()
+
+
     pressed = True if pygame.mouse.get_pressed()[0] == 1 else False
 
     # Card selection for attacking enemies
@@ -166,29 +200,7 @@ while running:
                 card_selection = False
                 attack_enemy = False
                 enemy_turn = True
-                #print(list(enemies)[0].enemy_class)
-
-    #print(list(enemies)[0].enemy_class)
-    if enemy_turn and len(enemies) > 0:
-        card_class = random.randint(0,2)
-        if list(enemies)[0].enemy_class_code == card_class:
-            enemy_card = card.deck_set(card_classes[card_class], 100, 100, True)
-        else:
-            enemy_card = card.deck_set(card_classes[card_class], 100, 100, False)
-        
-        enemy_card_attack = pygame.sprite.Group()
-        enemy_card_attack.add(enemy_card)
-
-        card_selection = True
-        enemy_turn = False
-
-        # Draw enemy card attack and wait some seconds to attack player
-        duration = 1
-        start_time = time.time()
-        while time.time() - start_time < duration:
-            enemy_card_attack.draw(screen)
-            pygame.display.flip()
-
+    
 
     # flip() the display to put your work on screen
     pygame.display.flip()
